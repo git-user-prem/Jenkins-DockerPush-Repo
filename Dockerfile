@@ -1,4 +1,2 @@
-FROM nginx:1.10.1-alpine
+FROM nginx:latest
 COPY index.html /usr/share/nginx/html
-EXPOSE 8090
-CMD ["nginx", "-g", "daemon off;"]
