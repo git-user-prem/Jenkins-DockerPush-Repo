@@ -16,20 +16,20 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    sh 'docker build -t $IMAGE_NAME:$IMAGE_TAG .'
+                    sh 'docker build -t dockerprem27/$IMAGE_NAME:$IMAGE_TAG .'
                 }
             }
         }
-       stage('Push image') {
+     stage('Docker Login & Push') {
             steps {
-                script {
-                     docker.withRegistry('https://registry.hub.docker.com', 'git') {
-                     app.push("${env.BUILD_NUMBER}")
-                     app.push("latest")
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKERHUB_USER', passwordVariable: 'DOCKERHUB_PASS')]) {
+                    sh '''
+                        echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USER" --password-stdin
+                        docker push dockerprem27/$IMAGE_NAME:$IMAGE_TAG
+                    '''
                 }
             }
         }
-     }
 
          stage('List Docker Images') {
              steps {
@@ -38,4 +38,3 @@ pipeline {
         }
     }
 }
-
